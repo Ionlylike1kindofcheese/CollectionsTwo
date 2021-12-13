@@ -25,14 +25,12 @@ def calculatelowernumbercount(checkinglist):
             else:
                 None
         if numberCount >= 3:
-            valueogen = c
-            return numberCount, valueogen
+            return numberCount
 
 
 def calculatelowerstraight(checkinglist):
     followupcount = 0
     for d in range(1,7):
-        print("D =", d)
         securitylayer = 0
         for e in range(5):
             if securitylayer >= 2:
@@ -43,20 +41,27 @@ def calculatelowerstraight(checkinglist):
             else:
                 None
         if securitylayer == 0:
-            print("proceed")
             followupcount = 0
     return followupcount
-        
-                
+
+
+def calculatelowerfullhouse(checkinglist):
+    filledspots = 0
+    for f in range(1,7):
+        securitylayer = 0
+        for g in range(5):
+            if checkinglist[g] == f:
+                filledspots += 1
+                securitylayer += 1
+            else:
+                None
+        if securitylayer < 2:
+            filledspots -= securitylayer
+    return filledspots
+              
 
 totaalpunten = 0
-# cheats
-dobbelstenenlist = [6, 1, 3, 4, 5]
-# cheats
-
-# turn off if cheat enabled
-# dobbelstenenlist = firstdobbelwerp()
-# turn off if cheat enabled
+dobbelstenenlist = firstdobbelwerp()
 werpcompletion = False
 rerollpogingen = 2
 while werpcompletion == False:
@@ -85,29 +90,41 @@ while werpcompletion == False:
 
 punten = 0
 
-straightcountresult = calculatelowerstraight(dobbelstenenlist)
-if straightcountresult == 4:
-    print("Small straight!!!")
+fullhouseresult = calculatelowerfullhouse(dobbelstenenlist)
+if fullhouseresult == 5:
+    print("Full house!!!")
     punten += 30
-    print(punten)
-elif straightcountresult == 5:
-    print("Large straight!!!")
-    punten += 40
-    print(punten)
+    print("+",punten)
+else:
+    numbercountresult = calculatelowernumbercount(dobbelstenenlist)
+    if numbercountresult == 3:
+        print("Three of a kind!!!")
+        for o in range(5):
+            punten = punten + dobbelstenenlist[0]
+            del dobbelstenenlist[0]
+        print("+",punten)
+    elif numbercountresult == 4:
+        print("Four of a kind!!!")
+        for o in range(5):
+            punten = punten + dobbelstenenlist[0]
+            del dobbelstenenlist[0]
+        print("+",punten)
+    elif numbercountresult == 5:
+        print("Yahtzee!!!")
+        punten += 50
+        print("+",punten)
+    else: 
+        straightcountresult = calculatelowerstraight(dobbelstenenlist)
+        if straightcountresult == 4:
+            print("Small straight!!!")
+            punten += 30
+            print("+",punten)
+        elif straightcountresult == 5:
+            print("Large straight!!!")
+            punten += 40
+            print("+",punten)
+        else:
+            None
 
-# numbercountresult, valueogen = calculatelowernumbercount(dobbelstenenlist)
-# if numbercountresult == 3:
-#     print("Three of a kind!!!")
-#     punten = punten + (3 * valueogen)
-#     print(punten)
-# elif numbercountresult == 4:
-#     print("Four of a kind!!!")
-#     punten = punten = (4 * valueogen)
-#     print(punten)
-# elif numbercountresult == 5:
-#     print("Yahtzee!!!")
-#     punten += 50
-#     print(punten)
-# else: 
-#     None
-
+totaalpunten += punten
+print("totaal aantal punten tot nu toe:", totaalpunten)
