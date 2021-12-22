@@ -64,6 +64,71 @@ def uitleg():
     sleep(3)
 
 
+def createCards():
+    # belangrijke lists
+    listColors = ['blauwe 0', 'rode 0', 'gele 0', 'groene 0']
+    listSpecial = []
+    # hulp materiaal
+    colorsGiven = ['blauwe ', 'rode ', 'gele ', 'groene ']
+    eightSpecial = ['neem-twee', 'keer-om', 'sla-beurt-over']
+    fourSpecial = ['keuzekaart', 'neem-vier']
+    # uitvoer opvulling lists
+    for kleur in colorsGiven:
+        for repeat in range(2):
+            for nummers in range(1,10):
+                listColors.append(str(kleur) + str(nummers))
+    for kleur in colorsGiven:
+        for repeat in range(2):
+            for achteenheden in eightSpecial:
+                listSpecial.append(str(kleur) + str(achteenheden))
+        for viereenheden in fourSpecial:
+            listSpecial.append(str(viereenheden))
+    # combineer 2 lists
+    sortedCards = list(listColors) + list(listSpecial)
+    # randomize de list en stop in nieuwe list
+    randomizedCards = []
+    randomizeProcess = False
+    indexrange = 108
+    while randomizeProcess == False:
+        chosenCardNumber = random.randrange(0,int(indexrange))
+        pickedCard = sortedCards[chosenCardNumber]
+        randomizedCards.append(pickedCard)
+        del sortedCards[chosenCardNumber]
+        indexrange -= 1
+        # indexrange check voor afbreken while loop
+        if indexrange == 0:
+            randomizeProcess = True
+        else:
+            None
+    # voltooide resultaat terugsturen buiten de function
+    return randomizedCards
+
+
+def giveCards(players):
+    # aanroepen andere function en results in variable stoppen
+    cardList = createCards()
+    # aanmaken van lists door dictionary
+    ammoutPlayers = players
+    ammouts = []
+    ammoutPlayers += 1
+    for numbers in range(1,ammoutPlayers):
+        ammouts.append(numbers)
+    dictionary = {}
+    for playernummer in ammouts:
+        dictionary['player%s' % playernummer] = []
+    # uitdelen van de kaarten
+    for givenCardCount in range(7):
+        for key, value in dictionary.items():
+            # aanpassing nodig!!!
+            # dictionary[key].append(cardList[0])
+            # aanpassing nodig!!!
+
+            # idee misschien?
+            # for key in dictionary:
+            #     value = dictionary[key]
+            # idee misschien?
+
+
 print("Welkom bij Uno!")
 startup = False
 while startup == False:
@@ -78,7 +143,7 @@ while startup == False:
 
 setup = False
 while setup == False:
-    players = input("Hoeveel spelers wilt u dat er meedoen? (Geef een nummer op) ")
+    players = int(input("Hoeveel spelers wilt u dat er meedoen? (Geef een nummer op) "))
     if players > 1 and players < 9:
         setup = True
     elif players == 1:
@@ -87,3 +152,5 @@ while setup == False:
         print("Te veel spelers")
     else:
         print(errormessage)
+
+giveCards(players)
