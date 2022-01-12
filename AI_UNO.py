@@ -83,17 +83,21 @@ def createCards():
                 listSpecial.append(str(kleur) + str(achteenheden))
         for viereenheden in fourSpecial:
             listSpecial.append(str(viereenheden))
-    # combineer 2 lists
+    # combineer 2 lists en buiten de function sturen
     sortedCards = list(listColors) + list(listSpecial)
+    return sortedCards
+
+
+def randomizeCards(currentCardlist):
     # randomize de list en stop in nieuwe list
     randomizedCards = []
     randomizeProcess = False
     indexrange = 108
     while randomizeProcess == False:
         chosenCardNumber = random.randrange(0,int(indexrange))
-        pickedCard = sortedCards[chosenCardNumber]
+        pickedCard = currentCardlist[chosenCardNumber]
         randomizedCards.append(pickedCard)
-        del sortedCards[chosenCardNumber]
+        del currentCardlist[chosenCardNumber]
         indexrange -= 1
         # indexrange check voor afbreken while loop
         if indexrange == 0:
@@ -104,30 +108,22 @@ def createCards():
     return randomizedCards
 
 
-def giveCards(players):
-    # aanroepen andere function en results in variable stoppen
-    cardList = createCards()
-    # aanmaken van lists door dictionary
-    ammoutPlayers = players
-    ammouts = []
-    ammoutPlayers += 1
-    for numbers in range(1,ammoutPlayers):
-        ammouts.append(numbers)
-    dictionary = {}
-    for playernummer in ammouts:
-        dictionary['player%s' % playernummer] = []
-    # uitdelen van de kaarten
-    for givenCardCount in range(7):
-        for key, value in dictionary.items():
-            # aanpassing nodig!!!
-            # dictionary[key].append(cardList[0])
-            # aanpassing nodig!!!
+def giveCards(playerammout):
+    # deelt de top kaart uit aan iedereen 7 keer
+    for cardrounds in range(7):
+        for playercount in range(0,playerammout):
+            topcard = currentCardlist[0]
+            del currentCardlist[0]
+            playerlist[playercount].append(topcard)
+    # creërt een local variable voor de speelstapel en legt de eerste kaart op de speelstapel
+    speelstapel = []
+    topcard = currentCardlist[0]
+    del currentCardlist[0]
+    speelstapel.append(topcard)
+    # return de huidige speelstapel buiten de function
+    return speelstapel
 
-            # idee misschien?
-            # for key in dictionary:
-            #     value = dictionary[key]
-            # idee misschien?
-
+# --------------------------------------------------- Functions above --------------------------------------------------------------------------
 
 print("Welkom bij Uno!")
 startup = False
@@ -153,4 +149,10 @@ while setup == False:
     else:
         print(errormessage)
 
-giveCards(players)
+# aanmaken van lists gebaseerd op aantal spelers en dan alle individuele lijsten in 1 lijst stoppen tussen blokhaakjes
+playerlist = [[] for i in range(players)]
+# aanroepen function voor kaarten aanmaken eenmalig en het randomizen van de kaarten
+sortedcardList = createCards()
+currentCardlist = randomizeCards(sortedcardList)
+# aanroepen function waar aan iedereen 7 kaarten wordt gegeven in het begin. Dit is een eenmalige function.
+speelStapel = giveCards(players)
