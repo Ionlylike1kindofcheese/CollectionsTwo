@@ -6,10 +6,12 @@ errormessage = "Error! Probeer opnieuw a.u.b"
 def uitleg():
     print("We zullen effe beginnen met het uitleggen hoe de regels werken.")
     sleep(2)
-    print("Voordat het spel begint worden alle kaarten geschud en wordt de bovenste kaart op de stapel gelegd. Deze bovenste kaart die wordt getrokken heeft geen effect in het begin")
+    print("Voordat het spel begint worden alle kaarten geschud en gegeven. De bovenste kaart op de stapel gelegd. Deze bovenste kaart die wordt getrokken heeft geen effect in het begin")
     sleep(4)
-    print("In het begin van het spel pakt iedereen 7 kaarten")
+    print("In het begin van het spel krijgt iedereen 7 kaarten")
     sleep(2)
+    print("Als u aan de beurt bent dan moet uw de positienummer van uw kaart benoemen (Waar de kaart van links naar rechts staat in uw deck)")
+    sleep(4)
     print("Je hebt normale kaarten en speciale kaarten (We komen daar later op terug)")
     sleep(3)
     print("In totaal zijn er 108 kaarten in het spel op gebied van inhoud")
@@ -112,16 +114,51 @@ def giveCards(playerammout):
     # deelt de top kaart uit aan iedereen 7 keer
     for cardrounds in range(7):
         for playercount in range(0,playerammout):
-            topcard = currentCardlist[0]
+            currentcard = currentCardlist[0]
             del currentCardlist[0]
-            playerlist[playercount].append(topcard)
+            playerlist[playercount].append(currentcard)
     # creërt een local variable voor de speelstapel en legt de eerste kaart op de speelstapel
     speelstapel = []
-    topcard = currentCardlist[0]
+    currentcard = currentCardlist[0]
     del currentCardlist[0]
-    speelstapel.append(topcard)
+    speelstapel.append(currentcard)
     # return de huidige speelstapel buiten de function
     return speelstapel
+
+
+def playableCard(checkingcard):
+    cardColours = ['blauwe', 'rode', 'gele', 'groene']
+    specialColoured = ['neem-twee', 'keer-om', 'sla-beurt-over']
+    withoutColours = ['keuzekaart', 'neem-vier']
+    canBePlayed = False
+    # Kaart heeft een kleur?
+    if canBePlayed == False:
+        for colour in cardColours:
+            if colour in checkingcard:
+                if colour in topcard:
+                    canBePlayed = True
+    # De kaart heeft een waarschijnlijk een andere kleur dan de topkaart. Zijn de nummers gelijk aan de topkaart?
+    elif canBePlayed == False:
+        for number in range(0,10):
+            if str(number) in checkingcard:
+                if str(number) in topcard:
+                    canBePlayed = True
+    # De kaart heeft geen nummer? Is het een speciale kaart?
+    elif canBePlayed == False:
+        for specialColour in specialColoured:
+            if specialColour in checkingcard:
+                if specialColour in topcard:
+                    canBePlayed == True
+    # Het kan een kaart zonder kleur zijn?
+    elif canBePlayed == False:
+        for noColour in withoutColours:
+            if noColour in checkingcard:
+                canBePlayed = True
+    # De kaart kan gewoon niet gespeeld worden en variable canBePlayed blijft False.
+    else:
+        None
+    return canBePlayed
+
 
 # --------------------------------------------------- Functions above --------------------------------------------------------------------------
 
@@ -154,5 +191,26 @@ playerlist = [[] for i in range(players)]
 # aanroepen function voor kaarten aanmaken eenmalig en het randomizen van de kaarten
 sortedcardList = createCards()
 currentCardlist = randomizeCards(sortedcardList)
-# aanroepen function waar aan iedereen 7 kaarten wordt gegeven in het begin. Dit is een eenmalige function.
-speelStapel = giveCards(players)
+# aanroepen function waar aan iedereen 7 kaarten wordt gegeven in het begin en de eerste kaart op de speelstapel legt. Deze eerste kaart heeft verder geen effect als het spel begint.
+gespeeldekaarten = giveCards(players)
+# belangrijke onderdelen voor het programma om functioneel te werken
+currentplayer = 0
+winnerknown = False
+deckcount = 7
+# ----------------------------------------------------- Setup installation above --------------------------------------------------------------------
+while winnerknown == False:
+    topcard = gespeeldekaarten[0]
+    print("Huidige kaart boven op de speelstapel:", topcard)
+
+    if currentplayer == 0:
+        print("Uw deck:", playerlist[0])
+        chosencardposition = int(input("Welke kaart wilt u spelen? "))
+        if chosencardposition > 0 and chosencardposition <= deckcount:
+            chosencardposition -= 1
+            chosencard = playerlist[0][chosencardposition]
+            playablecardstatus = playableCard(chosencard)
+            print(playablecardstatus)
+        else:
+            print(errormessage)
+    else:
+        ...
