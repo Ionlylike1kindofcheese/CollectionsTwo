@@ -2,6 +2,9 @@ import random
 from time import sleep
 
 errormessage = "Error! Probeer opnieuw a.u.b"
+cardColours = ['blauwe', 'rode', 'gele', 'groene']
+specialColoured = ['neem-twee', 'keer-om', 'sla-beurt-over']
+withoutColours = ['keuzekaart', 'neem-vier']
 
 def uitleg():
     print("We zullen effe beginnen met het uitleggen hoe de regels werken.")
@@ -12,6 +15,10 @@ def uitleg():
     sleep(2)
     print("Als u aan de beurt bent dan moet uw de positienummer van uw kaart benoemen (Waar de kaart van links naar rechts staat in uw deck)")
     sleep(4)
+    print("U moet 'uno' typen wanneer er aan u wordt gevraagd welke kaart u wilt spelen en u nog 1 kaart heb in uw deck. Wanneer u dit niet doet dan moet u voor straf 2 kaarten geforceerd pakken")
+    sleep(5)
+    print("Als u geen kaarten heb om te spelen dan moet u 'pak' typen. Dan wordt er een kaart van de kaartenstapel gepakt. U kan dan kiezen of u de kaart wilt spelen of niet.")
+    sleep(5)
     print("Je hebt normale kaarten en speciale kaarten (We komen daar later op terug)")
     sleep(3)
     print("In totaal zijn er 108 kaarten in het spel op gebied van inhoud")
@@ -94,7 +101,7 @@ def randomizeCards(currentCardlist):
     # randomize de list en stop in nieuwe list
     randomizedCards = []
     randomizeProcess = False
-    indexrange = 108
+    indexrange = len(currentCardlist)
     while randomizeProcess == False:
         chosenCardNumber = random.randrange(0,int(indexrange))
         pickedCard = currentCardlist[chosenCardNumber]
@@ -127,9 +134,6 @@ def giveCards(playerammout):
 
 
 def playableCard(checkingcard):
-    cardColours = ['blauwe', 'rode', 'gele', 'groene']
-    specialColoured = ['neem-twee', 'keer-om', 'sla-beurt-over']
-    withoutColours = ['keuzekaart', 'neem-vier']
     canBePlayed = False
     # Kaart heeft een kleur?
     if canBePlayed == False:
@@ -138,25 +142,26 @@ def playableCard(checkingcard):
                 if colour in topcard:
                     canBePlayed = True
     # De kaart heeft een waarschijnlijk een andere kleur dan de topkaart. Zijn de nummers gelijk aan de topkaart?
-    elif canBePlayed == False:
+    if canBePlayed == False:
         for number in range(0,10):
             if str(number) in checkingcard:
                 if str(number) in topcard:
                     canBePlayed = True
     # De kaart heeft geen nummer? Is het een speciale kaart?
-    elif canBePlayed == False:
+    if canBePlayed == False:
         for specialColour in specialColoured:
             if specialColour in checkingcard:
                 if specialColour in topcard:
                     canBePlayed == True
     # Het kan een kaart zonder kleur zijn?
-    elif canBePlayed == False:
+    if canBePlayed == False:
         for noColour in withoutColours:
             if noColour in checkingcard:
                 canBePlayed = True
     # De kaart kan gewoon niet gespeeld worden en variable canBePlayed blijft False.
     else:
         None
+    # Return True or False
     return canBePlayed
 
 
@@ -197,20 +202,78 @@ gespeeldekaarten = giveCards(players)
 currentplayer = 0
 winnerknown = False
 deckcount = 7
+playercheckcount = players
 # ----------------------------------------------------- Setup installation above --------------------------------------------------------------------
 while winnerknown == False:
+    if currentplayer == players:
+        currentplayer = 0
+    else:
+        None
+    for listaccess in range(0,playercheckcount):
+        if len(playerlist[listaccess]) == 0:
+            winnerknown = True
+            break
     topcard = gespeeldekaarten[0]
     print("Huidige kaart boven op de speelstapel:", topcard)
+    cardPlayed = False
 
     if currentplayer == 0:
-        print("Uw deck:", playerlist[0])
-        chosencardposition = int(input("Welke kaart wilt u spelen? "))
-        if chosencardposition > 0 and chosencardposition <= deckcount:
-            chosencardposition -= 1
-            chosencard = playerlist[0][chosencardposition]
-            playablecardstatus = playableCard(chosencard)
-            print(playablecardstatus)
-        else:
-            print(errormessage)
+        while cardPlayed == False:
+            print("Uw deck:", playerlist[0])
+            chosencardposition = input("Welke kaart wilt u spelen? ")
+            if chosencardposition == "uno":
+                if len(playerlist[0]) == 1:
+                    unocalled = True
+                else:
+                    print("U kan nog geen uno roepen")
+            elif chosencardposition == "pak":
+                ...
+            elif chosencardposition.isdigit() == True:
+                chosencardposition = int(chosencardposition)
+                if chosencardposition > 0 and chosencardposition <= deckcount:
+                    chosencardposition -= 1
+                    chosencard = playerlist[currentplayer][chosencardposition]
+                    playablecardstatus = playableCard(chosencard)
+                    if playablecardstatus == True:
+                        del playerlist[currentplayer][chosencardposition]
+                        gespeeldekaarten.insert(0,chosencard)
+                        currentplayer += 1
+                        cardPlayed = True
+                    elif playablecardstatus == False:
+                        print("Kaart kan niet gespeeld worden. Probeer het opnieuw. Anders pak een kaart van de stapel")
+                    else:
+                        print(errormessage)
+                else:
+                    print(errormessage)
+            else:
+                print(errormessage)
     else:
-        ...
+        while cardPlayed == False:
+            choosingcard = False
+            colourCount = [0, 0, 0, 0]
+            for index, colours in enumerate(cardColours):
+                for positions in playerlist[currentplayer]:
+                    if colours in positions:
+                        colourCount[index] += 1
+            while choosingcard == False:
+                if choosingcard == False:
+                    for uncoloured in withoutColours:
+                        for index, positions in enumerate(playerlist[currentplayer]):
+                            if uncoloured in positions:
+                                chosencard = playerlist[currentplayer][index]
+                                choosingcard = True
+                if choosingcard == False:
+                    perhapslist = []
+                    for specialunit in specialColoured:
+                        for index, positions in enumerate(playerlist[currentplayer]):
+                            if specialunit in positions:
+                                perhapslist.append(positions)
+                    
+                                
+                                
+# playablecardstatus = playableCard(chosencard)
+# if playablecardstatus == True:
+#     del playerlist[currentplayer][chosencardposition]
+#     gespeeldekaarten.insert(0,chosencard)
+#     currentplayer += 1
+#     cardPlayed = True
