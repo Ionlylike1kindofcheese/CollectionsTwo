@@ -1,6 +1,8 @@
+# Belangrijke imports
 import random
 from time import sleep
 
+# Belangrijke variabelen
 errormessage = "Error! Probeer opnieuw a.u.b"
 cardColours = ['blauwe', 'rode', 'gele', 'groene']
 specialColoured = ['neem-twee', 'keer-om', 'sla-beurt-over']
@@ -71,6 +73,18 @@ def uitleg():
     sleep(3)
     print("In totaal zijn er 4 kaarten hievan (1 van elke kleur)")
     sleep(3)
+    print("Dat was het voor de uitleg")
+    sleep(2)
+    anwsered = False
+    while anwsered == False:
+        nogeenkeer = input("Wilt u het nog een keer horen? (Antwoord met 'ja' of 'nee')")
+        if nogeenkeer == "ja":
+            anwsered = True
+            uitleg()
+        elif nogeenkeer == "nee":
+            anwsered = True
+        else:
+            errormessage
 
 
 def createCards():
@@ -79,8 +93,12 @@ def createCards():
     listSpecial = []
     # hulp materiaal
     colorsGiven = ['blauwe ', 'rode ', 'gele ', 'groene ']
+
+    # Duplicate below
     eightSpecial = ['neem-twee', 'keer-om', 'sla-beurt-over']
     fourSpecial = ['keuzekaart', 'neem-vier']
+    # Duplicate above
+
     # uitvoer opvulling lists
     for kleur in colorsGiven:
         for repeat in range(2):
@@ -152,7 +170,7 @@ def playableCard(checkingcard):
         for specialColour in specialColoured:
             if specialColour in checkingcard:
                 if specialColour in topcard:
-                    canBePlayed == True
+                    canBePlayed = True
     # Het kan een kaart zonder kleur zijn?
     if canBePlayed == False:
         for noColour in withoutColours:
@@ -164,6 +182,84 @@ def playableCard(checkingcard):
     # Return True or False
     return canBePlayed
 
+
+def countAndSortDictinary():
+    # Stopt alles in een niet gesorteerde dictionary
+    unsorted_dict = {}
+    for colour in cardColours:
+        currentcount = 0
+        for position in playerlist[currentplayer]:
+            if colour in position:
+                currentcount += 1
+        unsorted_dict[colour] = currentcount
+     # Sorteerd de waardes en stopt ze in nieuwe dictionary
+    sorted_values = sorted(unsorted_dict.values(),reverse= True)
+    sorted_dict = {}
+    for i in sorted_values:
+        for k in unsorted_dict.keys():
+            if unsorted_dict[k] == i:
+                sorted_dict[k] = unsorted_dict[k]
+                break
+    return sorted_dict
+
+
+def normalOrSpecial(normals, specials):
+    # Bepaalt per kleur of speciale kaart of normale kaart eerst gespeeld moet worden
+    for colours in dictCount:
+        for specialpositions in specials:
+            for units in specialColoured:
+                if units in specialpositions:
+                    chosencard = specialpositions
+                    return chosencard
+        for normalpositions in normals:
+            for numbers in range(9,-1,-1):
+                if str(numbers) in normalpositions:
+                    chosencard = normalpositions
+                    return chosencard
+
+
+def grabCards(ammoutcards, onepick, fourpick):
+    for times in range(ammoutcards):
+        grabbedcard = currentCardlist[0]
+        playerlist[currentplayer].append(currentCardlist[0])
+        del currentCardlist[0]
+    if onepick == True:
+        if currentplayer == 0:
+            print("Uw gepakte kaart:", grabbedcard)
+            playcard = input("Wilt u deze kaart spelen? (Antwoord met 'ja' of 'nee')")
+            if playcard == "ja":
+                playablecardstatus = playableCard(chosencard)
+                if playablecardstatus == True:
+                    del playerlist[currentplayer][chosencardposition]
+                    gespeeldekaarten.insert(0,chosencard)
+            elif playcard == "nee":
+                None
+            else:
+                print(errormessage)
+        else:
+            playablecardstatus = playableCard(chosencard)
+            if playablecardstatus == True:
+                del playerlist[currentplayer][chosencardposition]
+                gespeeldekaarten.insert(0,chosencard)
+    elif fourpick == True:
+        # colourChoice(True)
+        ...
+
+
+def rotationGame():
+    ...
+
+
+def skipTurn():
+    ...
+
+
+def colourChoice(followupfunction):
+    if currentplayer == 0:
+        anwsered = False
+        while anwsered == False:
+            chosencolour = input("Kies een kleur waarvan de volgende kaart gespeeld moet worden (Antwoord met 'blauw', 'rood', 'geel' of 'groen')")
+            # AANPASSING NODIG!!!
 
 # --------------------------------------------------- Functions above --------------------------------------------------------------------------
 
@@ -203,8 +299,15 @@ currentplayer = 0
 winnerknown = False
 deckcount = 7
 playercheckcount = players
+topcard = gespeeldekaarten[0]
+Colouradjustmentcheck = False
+sleep(1)
+print("Huidige kaart boven op de speelstapel:", topcard)
+sleep(2)
 # ----------------------------------------------------- Setup installation above --------------------------------------------------------------------
 while winnerknown == False:
+    if Colouradjustmentcheck == True:
+        print("de game wordt verder gespeeld met de kleur:", ...)  # AANPASSING NODIG!!!
     if currentplayer == players:
         currentplayer = 0
     else:
@@ -213,9 +316,8 @@ while winnerknown == False:
         if len(playerlist[listaccess]) == 0:
             winnerknown = True
             break
-    topcard = gespeeldekaarten[0]
-    print("Huidige kaart boven op de speelstapel:", topcard)
     cardPlayed = False
+    Colouradjustmentcheck
 
     if currentplayer == 0:
         while cardPlayed == False:
@@ -227,22 +329,28 @@ while winnerknown == False:
                 else:
                     print("U kan nog geen uno roepen")
             elif chosencardposition == "pak":
-                ...
+                grabCards(1, True, False)
+                cardPlayed = True
             elif chosencardposition.isdigit() == True:
                 chosencardposition = int(chosencardposition)
                 if chosencardposition > 0 and chosencardposition <= deckcount:
                     chosencardposition -= 1
                     chosencard = playerlist[currentplayer][chosencardposition]
+
+                    # duplicate below
                     playablecardstatus = playableCard(chosencard)
                     if playablecardstatus == True:
                         del playerlist[currentplayer][chosencardposition]
                         gespeeldekaarten.insert(0,chosencard)
-                        currentplayer += 1
                         cardPlayed = True
+                    # duplicate above
+
+                    # Must be adjusted before fixing duplicates
                     elif playablecardstatus == False:
                         print("Kaart kan niet gespeeld worden. Probeer het opnieuw. Anders pak een kaart van de stapel")
                     else:
                         print(errormessage)
+                    # Must be adjusted before fixing duplicates
                 else:
                     print(errormessage)
             else:
@@ -250,11 +358,7 @@ while winnerknown == False:
     else:
         while cardPlayed == False:
             choosingcard = False
-            colourCount = [0, 0, 0, 0]
-            for index, colours in enumerate(cardColours):
-                for positions in playerlist[currentplayer]:
-                    if colours in positions:
-                        colourCount[index] += 1
+            dictCount = countAndSortDictinary()
             while choosingcard == False:
                 if choosingcard == False:
                     for uncoloured in withoutColours:
@@ -262,18 +366,72 @@ while winnerknown == False:
                             if uncoloured in positions:
                                 chosencard = playerlist[currentplayer][index]
                                 choosingcard = True
+                    playablecardstatus = playableCard(chosencard)
+                    if playablecardstatus == True:
+                        del playerlist[currentplayer][chosencardposition]
+                        gespeeldekaarten.insert(0,chosencard)
+                        cardPlayed = True
                 if choosingcard == False:
-                    perhapslist = []
+                    listSpecial = []
                     for specialunit in specialColoured:
-                        for index, positions in enumerate(playerlist[currentplayer]):
+                        for positions in playerlist[currentplayer]:
                             if specialunit in positions:
-                                perhapslist.append(positions)
-                    
+                                listSpecial.append(positions)
+                    listNormal = []
+                    for positions in playerlist[currentplayer]:
+                        for numbers in range(9,-1,-1):
+                            if str(numbers) in positions:
+                                listNormal.append(positions)
+                    continuecomfirmed = False
+                    while (len(listSpecial) > 0 and len(listNormal) > 0) and continuecomfirmed == False:
+                        chosencard = normalOrSpecial(listNormal, listSpecial)
+                        choosingcard = True
+                        playablecardstatus = playableCard(chosencard)
+                        if playablecardstatus == True:
+                            del playerlist[currentplayer][chosencardposition]
+                            gespeeldekaarten.insert(0,chosencard)
+                            continuecomfirmed = True
+                            cardPlayed = True
+                        else:
+                            if len(listSpecial) > 0:
+                                for index, positions in enumerate(listSpecial):
+                                    if chosencard in positions:
+                                        del listSpecial[index]
+                            elif len(listNormal) > 0:
+                                for index, positions in enumerate(listNormal):
+                                    if chosencard in positions:
+                                        del listNormal[index]
+                            else:
+                                grabCards(1, True, False)
+                                cardPlayed = True
+                                break
+
                                 
-                                
-# playablecardstatus = playableCard(chosencard)
-# if playablecardstatus == True:
-#     del playerlist[currentplayer][chosencardposition]
-#     gespeeldekaarten.insert(0,chosencard)
-#     currentplayer += 1
-#     cardPlayed = True
+
+    # Laat zien wat er gespeeld wordt
+    showcurrentplayernumber = currentplayer + 1
+    if currentplayer == 0:
+        botOrUser = "U"
+        showcurrentplayernumber = ""
+    else:
+        botOrUser = "AI_Speler"
+    print(botOrUser + str(showcurrentplayernumber), "speelt:", chosencard)
+
+    # Speciale kaarten functie calls
+    if 'neem-twee' in chosencard:
+        grabCards(2, False, False)
+    elif 'neem-vier' in chosencard:
+        grabCards(4, False, True)
+    elif 'keer-om' in chosencard:
+        rotationGame()
+    elif 'sla-beurt-over' in chosencard:
+        skipTurn()
+    elif 'keuzekaart' in chosencard:
+        colourChoice(False)
+        Colouradjustmentcheck = True
+    else:
+        None
+    
+    sleep(1)
+    print("Huidige kaart boven op de speelstapel:", topcard)
+    sleep(2)
