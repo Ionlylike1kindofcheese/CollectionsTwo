@@ -84,7 +84,7 @@ def uitleg():
         elif nogeenkeer == "nee":
             anwsered = True
         else:
-            errormessage
+            print(errormessage)
 
 
 def createCards():
@@ -218,7 +218,9 @@ def normalOrSpecial(normals, specials):
                     return chosencard
 
 
-def grabCards(ammoutcards, onepick, fourpick):
+def grabCards(ammoutcards, onepick, fourpick, nextperson):
+    if nextperson == True:
+        nextinline(1)
     for times in range(ammoutcards):
         grabbedcard = currentCardlist[0]
         playerlist[currentplayer].append(currentCardlist[0])
@@ -242,24 +244,63 @@ def grabCards(ammoutcards, onepick, fourpick):
                 del playerlist[currentplayer][chosencardposition]
                 gespeeldekaarten.insert(0,chosencard)
     elif fourpick == True:
-        # colourChoice(True)
-        ...
+        colourChoice()
+    else:
+        None
 
 
 def rotationGame():
-    ...
+    print("De speelvolgorde van het spel wordt omgedraaid!!!")
+    if rotation == "forwards":
+        return "backwards"
+    elif rotation == "backwards":
+        return "forwards"
 
 
 def skipTurn():
-    ...
+    print("De volgende speler moet een beurt overslaan")
+    nextinline(2)
 
 
-def colourChoice(followupfunction):
+def colourChoice():
     if currentplayer == 0:
         anwsered = False
         while anwsered == False:
             chosencolour = input("Kies een kleur waarvan de volgende kaart gespeeld moet worden (Antwoord met 'blauw', 'rood', 'geel' of 'groen')")
-            # AANPASSING NODIG!!!
+            if chosencolour == 'blauw':
+                chosencolour = cardColours[0]
+                anwsered = True
+            elif chosencolour == 'rood':
+                chosencolour = cardColours[1]
+                anwsered = True
+            elif chosencolour == 'geel':
+                chosencolour = cardColours[2]
+                anwsered = True
+            elif chosencolour == 'groen':
+                chosencolour = cardColours[3]
+                anwsered = True
+            else:
+                print(errormessage)
+    else: 
+        chosencolour = random.choice(cardColours)
+    return chosencolour
+
+
+def nextinline(ammout):
+    mininumplayer = 0
+    maxinumplayer = players - 1
+    global currentplayer
+    for x in range(ammout):
+        if rotation == "forwards":
+            currentplayer += 1
+            if currentplayer > maxinumplayer:
+                currentplayer = mininumplayer
+        elif rotation == "backwards":
+            currentplayer -= 1
+            if currentplayer < mininumplayer:
+                currentplayer = maxinumplayer
+
+
 
 # --------------------------------------------------- Functions above --------------------------------------------------------------------------
 
@@ -296,6 +337,7 @@ currentCardlist = randomizeCards(sortedcardList)
 gespeeldekaarten = giveCards(players)
 # belangrijke onderdelen voor het programma om functioneel te werken
 currentplayer = 0
+rotation = "forwards"
 winnerknown = False
 deckcount = 7
 playercheckcount = players
@@ -306,18 +348,18 @@ print("Huidige kaart boven op de speelstapel:", topcard)
 sleep(2)
 # ----------------------------------------------------- Setup installation above --------------------------------------------------------------------
 while winnerknown == False:
-    if Colouradjustmentcheck == True:
-        print("de game wordt verder gespeeld met de kleur:", ...)  # AANPASSING NODIG!!!
-    if currentplayer == players:
-        currentplayer = 0
-    else:
-        None
     for listaccess in range(0,playercheckcount):
         if len(playerlist[listaccess]) == 0:
             winnerknown = True
             break
+    if winnerknown == True:
+        break
+    if Colouradjustmentcheck == True:
+        print("de game wordt verder gespeeld met een", mustcolour, "kaart")  # AANPASSING NODIG OP ANDERE PLEKKEN VANWEGE DIT!!!
+    else:
+        None
     cardPlayed = False
-    Colouradjustmentcheck
+    Colouradjustmentcheck = False
 
     if currentplayer == 0:
         while cardPlayed == False:
@@ -329,7 +371,7 @@ while winnerknown == False:
                 else:
                     print("U kan nog geen uno roepen")
             elif chosencardposition == "pak":
-                grabCards(1, True, False)
+                grabCards(1, True, False, False)
                 cardPlayed = True
             elif chosencardposition.isdigit() == True:
                 chosencardposition = int(chosencardposition)
@@ -368,6 +410,7 @@ while winnerknown == False:
                                 choosingcard = True
                     playablecardstatus = playableCard(chosencard)
                     if playablecardstatus == True:
+                        chosencard = playerlist[currentplayer][chosencardposition]
                         del playerlist[currentplayer][chosencardposition]
                         gespeeldekaarten.insert(0,chosencard)
                         cardPlayed = True
@@ -388,6 +431,7 @@ while winnerknown == False:
                         choosingcard = True
                         playablecardstatus = playableCard(chosencard)
                         if playablecardstatus == True:
+                            chosencard = playerlist[currentplayer][chosencardposition]
                             del playerlist[currentplayer][chosencardposition]
                             gespeeldekaarten.insert(0,chosencard)
                             continuecomfirmed = True
@@ -402,14 +446,20 @@ while winnerknown == False:
                                     if chosencard in positions:
                                         del listNormal[index]
                             else:
-                                grabCards(1, True, False)
+                                grabCards(1, True, False, False)
                                 cardPlayed = True
                                 break
 
                                 
 
     # Laat zien wat er gespeeld wordt
-    showcurrentplayernumber = currentplayer + 1
+    if rotation == "forward":
+        showcurrentplayernumber = currentplayer + 1
+    elif rotation == "backwards":
+        showcurrentplayernumber = currentplayer - 1
+    else:
+        None
+    
     if currentplayer == 0:
         botOrUser = "U"
         showcurrentplayernumber = ""
@@ -419,19 +469,22 @@ while winnerknown == False:
 
     # Speciale kaarten functie calls
     if 'neem-twee' in chosencard:
-        grabCards(2, False, False)
+        grabCards(2, False, False, True)
     elif 'neem-vier' in chosencard:
-        grabCards(4, False, True)
+        grabCards(4, False, True, True)
     elif 'keer-om' in chosencard:
         rotationGame()
+        nextinline(1)
     elif 'sla-beurt-over' in chosencard:
         skipTurn()
     elif 'keuzekaart' in chosencard:
-        colourChoice(False)
+        mustcolour = colourChoice()
+        nextinline(1)
         Colouradjustmentcheck = True
     else:
-        None
+        nextinline(1)
     
+    topcard = gespeeldekaarten[0]
     sleep(1)
     print("Huidige kaart boven op de speelstapel:", topcard)
     sleep(2)
